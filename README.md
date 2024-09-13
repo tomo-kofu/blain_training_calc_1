@@ -13,6 +13,11 @@
 16までの計算問題を１００問実施する脳トレのWebアプリです。
 Chromeで動作確認済みです。
 
+開始時のサンプル画像
+![calc_before_image](https://github.com/user-attachments/assets/d381222d-3f06-45ee-a520-c466663b7530)
+
+終了時のサンプル画像
+![calc_after_image](https://github.com/user-attachments/assets/01e52c95-80d9-436a-9c2d-fd2e79f671bf)
 
 ## インストール
 
