@@ -1,0 +1,154 @@
+<html>
+  <head>
+    <title>create calc test1</title>
+  </head>
+  <body>
+    <button onclick="calc_start()">start</button>
+    <div id="calc">
+      <table id="table1"></table>
+    </div>
+    <button onclick="calc_result()">finish</button>
+    <div id="ok_count">ok_count = <div>
+  </body>
+  <script>
+    class create_calc_test1 {
+      _max_result = 16.99;
+      _min_result = 2;
+      _min_num_first = 1;
+
+      constructor() {
+      }
+
+      set_max_result(max) {
+        _max_result = max;
+      }
+
+      get_calc(retry_count) {
+        var result = Math.floor(Math.random() * this._max_result);
+        // 0が答えにならないようにする
+        if (result < this._min_result) {
+            result = this._min_result;
+        }
+        var num_first = Math.floor(Math.random() * (result - 1));
+        // 0が計算の数にならないようにする
+        if (num_first < this._min_num_first) {
+            num_first = this._min_num_first;
+        }
+        var num_second = result - num_first;
+        
+        // 1の計算が想定より多いため。計算に1があると、計算内容を再生成する。
+        if (retry_count > 0) {
+          if (num_first == 1 || num_second == 1) {
+            var calc_params_array = this.get_calc(retry_count - 1);
+            num_first = calc_params_array[0];
+            num_second = calc_params_array[1];
+            result = calc_params_array[2];
+          }
+        }
+        
+        return [num_first, num_second, result];
+      }
+    }
+
+    var loop_count = 100;
+    var re_calc_count = 2;
+
+    var create_calc = new create_calc_test1();
+    var calc_array = [];
+    var start_date = null;
+
+    function calc_start() {
+      start_date = new Date();
+
+      var table_parent = document.getElementById("calc");
+      var table1 = document.getElementById("table1");
+      table_parent.removeChild(table1);
+      table1 = document.createElement("table");
+      table1.setAttribute("id", "table1");
+      //table1.setAttribute("border", "1"); // 枠線
+      table_parent.appendChild(table1);
+      
+      var th_td_front = document.createElement("td"); // １番目の数
+      th_td_front.innerText = " 式 ";
+      table1.appendChild(th_td_front);
+      var th_td_plus = document.createElement("td"); // +
+      th_td_plus.innerText = "  ";
+      table1.appendChild(th_td_plus);
+      var th_td_second = document.createElement("td"); // ２番目の数
+      th_td_second.innerText = "  ";
+      table1.appendChild(th_td_second);
+      var th_td_equal = document.createElement("td"); // =
+      th_td_equal.innerText = "  ";
+      table1.appendChild(th_td_equal);
+      var th_td_result = document.createElement("td"); // 答え記入欄
+      th_td_result.innerText = " 答え記入欄 ";
+      table1.appendChild(th_td_result);
+      var th_td_ok_or_ng = document.createElement("td"); // 正解表示欄
+      th_td_ok_or_ng.innerText = " 正解表示欄 ";
+      table1.appendChild(th_td_ok_or_ng);
+      
+      for (var i = 0; i < loop_count; i++) {
+        var calc_params_array = create_calc.get_calc(re_calc_count);
+        var num_first = calc_params_array[0];
+        var num_second = calc_params_array[1];
+        var result = calc_params_array[2];
+        var calc_dist = {};
+        calc_dist["num_first"] = num_first;
+        calc_dist["num_second"] = num_second;
+        calc_dist["result"] = result;
+        calc_array.push(calc_dist);
+        // テーブルに行を生成
+        var tr = document.createElement("tr");
+        var td_front = document.createElement("td"); // １番目の数
+        td_front.innerText = num_first;
+        tr.appendChild(td_front);
+        var td_plus = document.createElement("td"); // +
+        td_plus.innerText = " + ";
+        tr.appendChild(td_plus);
+        var td_second = document.createElement("td"); // ２番目の数
+        td_second.innerText = num_second;
+        tr.appendChild(td_second);
+        var td_equal = document.createElement("td"); // =
+        td_equal.innerText = " = ";
+        tr.appendChild(td_equal);
+        var td_result = document.createElement("td"); // 答え記入欄
+        tr.appendChild(td_result);
+        var input_result = document.createElement("input");
+        input_result.setAttribute("type", "number");
+        input_result.setAttribute("id", "result" + String(i));
+        td_result.appendChild(input_result);
+        var td_ok_or_ng = document.createElement("td"); // 正解表示欄
+        td_ok_or_ng.setAttribute("id", "ok_or_ng" + String(i));
+        tr.appendChild(td_ok_or_ng);
+        table1.appendChild(tr);
+      }
+    }
+
+    function calc_result() {
+      var start_time = start_date.getTime();
+      var end_date = new Date();
+      var end_time = end_date.getTime();
+      var proc_time = (end_time - start_time) / 1000;
+
+      var ok_count = 0;
+      for (var i = 0; i < loop_count; i++) {
+        var calc_dist = calc_array[i];
+        var result_elem = document.getElementById("result" + String(i));
+        var ok_or_ng_elem = document.getElementById("ok_or_ng" + String(i));
+        var is_calc_ok = false;
+        if (calc_dist["result"] == parseInt(result_elem.value)) {
+          is_calc_ok = true;
+        }
+        if (is_calc_ok == true) {
+          ok_count++;
+          ok_or_ng_elem.innerText = " 〇 ";
+        } else {
+          ok_or_ng_elem.innerText = " × ";
+        }
+      }
+      var ok_count_elem = document.getElementById("ok_count");
+      ok_count_elem.innerText = "ok_count: " + String(ok_count) + ", proc time: " + String(proc_time);
+    }
+
+  </script> 
+</html>
